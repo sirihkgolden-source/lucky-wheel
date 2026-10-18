@@ -2,32 +2,40 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>人生重來模擬器 - 百歲長篇版</title>
   <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 10px;
+      background-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #2d3748;
+    }
     .game-card {
       max-width: 580px;
-      margin: 20px auto;
-      padding: 25px;
+      margin: 10px auto;
+      padding: 22px;
       border-radius: 12px;
       background-color: #f9f9fb;
       box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      color: #2d3748;
       line-height: 1.6;
     }
-    .game-title { text-align: center; color: #1a202c; margin-bottom: 5px; font-size: 1.6em; }
-    .game-subtitle { text-align: center; font-size: 0.9em; color: #718096; margin-bottom: 20px; }
+    .game-title { text-align: center; color: #1a202c; margin-bottom: 5px; font-size: 1.5em; }
+    .game-subtitle { text-align: center; font-size: 0.85em; color: #718096; margin-bottom: 15px; }
     .stat-box {
       background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px;
-      padding: 15px; margin-bottom: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.95em;
+      padding: 12px; margin-bottom: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.9em;
     }
     .event-text {
-      font-size: 1.08em; margin: 20px 0; min-height: 90px; padding: 12px; background: #ffffff; border-left: 4px solid #3182ce; border-radius: 4px;
+      font-size: 1.05em; margin: 15px 0; min-height: 85px; padding: 12px; background: #ffffff; border-left: 4px solid #3182ce; border-radius: 4px;
     }
     .btn-container { display: flex; flex-direction: column; gap: 10px; }
     .custom-btn {
-      background-color: #3182ce; color: white; padding: 12px 20px;
-      border-radius: 6px; font-size: 1em; cursor: pointer; transition: background-color 0.2s;
-      text-align: left; user-select: none; -webkit-user-select: none;
+      background-color: #3182ce; color: white; padding: 12px 16px;
+      border-radius: 6px; font-size: 0.95em; cursor: pointer; transition: background-color 0.2s;
+      text-align: left; user-select: none;
     }
     .custom-btn:hover { background-color: #2b6cb0; }
     .btn-restart { background-color: #e53e3e; text-align: center; }
@@ -39,8 +47,8 @@
 
 <div class="game-card">
   <h2 class="game-title">80億分之1 人生重來模擬器</h2>
-  <div class="game-subtitle">超長體驗版 每5年一次重大命運抉擇</div>
-  <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 15px 0;">
+  <div class="game-subtitle">百歲世紀長篇版：每5年一次抉擇，體驗完整一生</div>
+  <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 10px 0;">
 
   <div id="character-info" class="stat-box" style="display:none;">
     <div>出生地點: <span id="country-name" class="badge">---</span></div>
@@ -52,20 +60,21 @@
   </div>
 
   <div id="event-display" class="event-text">
-    點擊下方按鈕開始 隨機投胎展開你的一生...
+    點擊下方按鈕開始，隨機投胎展開你的世紀人生...
   </div>
 
   <div id="action-buttons" class="btn-container">
-    <div class="custom-btn btn-restart" onclick="window.startNewLife()">開始投胎</div>
+    <div class="custom-btn btn-restart" id="start-btn">開始投胎</div>
   </div>
 </div>
 
 <script>
 var countriesData = [
-  { name: "台灣", prob: 1.0, lifeExp: 81, childMortality: 0.4, bg: ["雙薪上班族家庭", "科技業高薪家庭", "傳統農漁業家庭"] },
-  { name: "日本", prob: 2.0, lifeExp: 84, childMortality: 0.2, bg: ["東京上班族家庭", "地方傳統農家", "職人手藝家庭"] },
-  { name: "印度", prob: 17.0, lifeExp: 70, childMortality: 3.1, bg: ["傳統農村家庭", "城市中產家庭", "貧民區基層家庭"] },
-  { name: "其他國家", prob: 80.0, lifeExp: 72, childMortality: 2.5, bg: ["普通基層家庭", "地方小商人家庭", "邊境勞工家庭"] }
+  { name: "台灣", prob: 1.0, lifeExp: 82, childMortality: 0.3, bg: ["雙薪上班族家庭", "科技業高薪家庭", "傳統農漁業家庭", "都會小康家庭"] },
+  { name: "香港", prob: 1.0, lifeExp: 85, childMortality: 0.2, bg: ["公屋基層家庭", "中產專業人士家庭", "傳統商鋪家庭", "金融界高壓家庭"] },
+  { name: "日本", prob: 2.0, lifeExp: 84, childMortality: 0.2, bg: ["東京上班族家庭", "地方傳統農家", "職人手藝家庭", "東京都心核心家庭"] },
+  { name: "美國", prob: 5.0, lifeExp: 79, childMortality: 0.5, bg: ["郊區中產家庭", "移民奮鬥家庭", "工薪藍領家庭", "自由接案家庭"] },
+  { name: "其他國家", prob: 91.0, lifeExp: 72, childMortality: 2.5, bg: ["普通基層家庭", "地方小商人家庭", "邊境勞工家庭", "傳統農村家庭"] }
 ];
 
 var player = {};
@@ -73,280 +82,187 @@ var currentStageIndex = 0;
 
 var stages = [
   {
-    age: 5,
-    title: "5歲 幼兒成長期",
-    desc: "你開始對世界充滿好奇 父母準備安排你的早期啟蒙:",
+    age: 5, title: "5歲 幼兒啟蒙期", desc: "你開始對世界充滿好奇，父母準備安排你的早期生活:",
     choices: [
-      { text: "1. 專心聽故事看繪本 培養專注力", h: 0, w: 5, k: 5 },
-      { text: "2. 到處奔跑公園玩耍 鍛鍊體力", h: 10, w: 0, k: 5 },
-      { text: "3. 沉迷玩具堆 積木拼圖自己玩", h: 0, w: 0, k: 10 },
-      { text: "4. 喜歡跟其他小孩搶玩具 展現霸道", h: -5, w: 5, k: 5 }
+      { text: "1. 專心閱讀繪本故事，培養早期專注力", h: 0, w: 5, k: 5 },
+      { text: "2. 天天到公園瘋跑玩耍，鍛鍊強健體魄", h: 10, w: 0, k: 5 },
+      { text: "3. 沉迷積木與拼圖，享受獨自思考樂趣", h: 0, w: 0, k: 10 },
+      { text: "4. 到處交朋友當孩子王，展現領導特質", h: -5, w: 5, k: 5 }
     ]
   },
   {
-    age: 10,
-    title: "10歲 小學童年期",
-    desc: "你在學校認識了新朋友 課餘時間你的主軸是:",
+    age: 10, title: "10歲 小學童年期", desc: "你在學校認識了許多新同學，課餘時間你的重心是:",
     choices: [
-      { text: "1. 認真做功課 每次考試都爭取滿分", h: -5, w: 10, k: -5 },
-      { text: "2. 參加運動社團 成為場上的焦點", h: 10, w: 0, k: 5 },
-      { text: "3. 沉迷電子遊戲與動漫 世界真美好", h: -5, w: 0, k: 10 },
-      { text: "4. 幫忙家裡做家務 做個懂事的好孩子", h: 0, w: 5, k: 5 }
+      { text: "1. 認真讀書拼每次考試，爭取全班第一", h: -5, w: 10, k: -5 },
+      { text: "2. 加入運動校隊，成為操場上的風雲人物", h: 10, w: 0, k: 5 },
+      { text: "3. 沉迷電玩遊戲與漫畫，世界真是美好", h: -5, w: 0, k: 10 },
+      { text: "4. 主動幫忙家務，做個貼心懂事的孩子", h: 0, w: 5, k: 5 }
     ]
   },
   {
-    age: 15,
-    title: "15歲 國中叛逆期",
-    desc: "面對升學壓力與青春期躁動 你選擇的方向是:",
+    age: 15, title: "15歲 國中叛逆期", desc: "面對升學壓力與青春期躁動，你選擇的青春道路是:",
     choices: [
-      { text: "1. 挑燈夜戰苦讀 準備考取第一志願", h: -10, w: 15, k: -10 },
-      { text: "2. 結交好友組樂隊 做個酷炫叛逆青年", h: 0, w: 0, k: 15 },
-      { text: "3. 偷偷打工賺零用錢 提早體會社會現實", h: -5, w: 10, k: 5 },
-      { text: "4. 談一場青澀的初戀 體會心動的感覺", h: 0, w: 0, k: 10 }
+      { text: "1. 挑燈夜戰苦讀，目標第一志願明星高中", h: -10, w: 15, k: -10 },
+      { text: "2. 結交好友組樂團，做個熱血叛逆青年", h: 0, w: 0, k: 15 },
+      { text: "3. 偷偷打工賺零用錢，提早接觸社會現實", h: -5, w: 10, k: 5 },
+      { text: "4. 談一場青澀純潔的初戀，體會心跳感覺", h: 0, w: 0, k: 10 }
     ]
   },
   {
-    age: 20,
-    title: "20歲 大學青年期",
-    desc: "站在成年的十字路口 你將精力投注在:",
+    age: 20, title: "20歲 大學青年期", desc: "站在成年的十字路口，你將大部分精力投注在:",
     choices: [
-      { text: "1. 拼命實習與考證照 為職涯做足準備", h: -5, w: 20, k: -5 },
-      { text: "2. 環島與背包客旅行 開闊視野眼界", h: 5, w: -5, k: 15 },
-      { text: "3. 熱衷社團社交 當個風雲人物", h: 0, w: 5, k: 10 },
-      { text: "4. 兼職多份打工 自己賺取生活費", h: -5, w: 15, k: 0 }
+      { text: "1. 瘋狂實習與考證照，為未來職涯鋪路", h: -5, w: 20, k: -5 },
+      { text: "2. 安排環島與背包客旅行，開闊世界視野", h: 5, w: -5, k: 15 },
+      { text: "3. 熱衷社團社交與派對，當個交際花", h: 0, w: 5, k: 10 },
+      { text: "4. 兼職多份打工，徹底實現經濟獨立", h: -5, w: 15, k: 0 }
     ]
   },
   {
-    age: 25,
-    title: "25歲 社會新人期",
-    desc: "進入職場數年 面對第一份正式工作的態度是:",
+    age: 25, title: "25歲 社會新人期", desc: "踏入社會幾年了，面對第一份正式工作的態度是:",
     choices: [
-      { text: "1. 自願主動加班 爭取老闆青睞與升遷", h: -10, w: 20, k: -5 },
-      { text: "2. 準時下班 發展個人副業與興趣", h: 5, w: 10, k: 5 },
-      { text: "3. 勇敢辭職 拿積蓄嘗試個人創業", h: -10, w: 25, k: -10 },
-      { text: "4. 考取公職或鐵飯碗 追求絕對穩定", h: 5, w: 10, k: 5 }
+      { text: "1. 自願瘋狂加班，爭取長官賞識與升遷", h: -10, w: 25, k: -10 },
+      { text: "2. 堅持準時下班，發展個人興趣與副業", h: 5, w: 10, k: 10 },
+      { text: "3. 裸辭拿出積蓄，勇敢嘗試自己創業", h: -15, w: 30, k: -5 },
+      { text: "4. 準備公職考試，追求絕對穩定的鐵飯碗", h: 5, w: 10, k: 5 }
     ]
   },
   {
-    age: 30,
-    title: "30歲 成家立業期",
-    desc: "邁入30大關 面對婚姻與資產規劃 你選擇:",
+    age: 30, title: "30歲 成家立業期", desc: "邁入30大關，面對人生重大資產與感情抉擇:",
     choices: [
-      { text: "1. 咬牙貸款買房 置產準備結婚成家", h: -10, w: 15, k: 5 },
-      { text: "2. 堅持單身貴族 享受自由自在的生活", h: 5, w: 10, k: 10 },
-      { text: "3. 全力投注事業 邁向高階主管職位", h: -10, w: 25, k: -5 },
-      { text: "4. 積極學習投資理財 嘗試股票加密貨幣", h: 0, w: 20, k: -5 }
+      { text: "1. 咬牙背房貸買房，準備結婚建立家庭", h: -10, w: 20, k: 5 },
+      { text: "2. 堅持單身主義，享受自由自在的單身貴族", h: 5, w: 10, k: 15 },
+      { text: "3. 全力衝刺事業，登上企業高階主管大位", h: -15, w: 30, k: -5 },
+      { text: "4. 積極學習投資理財，涉足股票與數位資產", h: 0, w: 25, k: -5 }
     ]
   },
   {
-    age: 35,
-    title: "35歲 壯年責任期",
-    desc: "上有老下有小 職場與家庭雙重壓力下 你選擇:",
+    age: 35, title: "35歲 壯年責任期", desc: "上有老下有小，生活壓力達到高峰，你選擇:",
     choices: [
-      { text: "1. 咬牙撐住 重心全放在賺錢養家", h: -15, w: 25, k: -10 },
-      { text: "2. 調整工作步調 多抽時間陪伴家人", h: 10, w: -5, k: 15 },
-      { text: "3. 跳槽到新興產業 尋求事業第二曲線", h: -5, w: 20, k: 0 },
-      { text: "4. 開始注意健康 抽空上健身房鍛鍊", h: 15, w: -5, k: 5 }
+      { text: "1. 為了家庭全面拼賺錢，犧牲私人時間", h: -15, w: 30, k: -15 },
+      { text: "2. 適度減輕工作，抽更多時間陪伴摯愛家人", h: 10, w: -5, k: 20 },
+      { text: "3. 轉職到熱門新興產業，尋找事業第二春", h: -5, w: 20, k: 5 },
+      { text: "4. 體悟健康重要，抽空固定上健身房運動", h: 20, w: -5, k: 10 }
     ]
   },
   {
-    age: 40,
-    title: "40歲 不惑突破期",
-    desc: "人到中年 你開始思考人生的第二座高峰:",
+    age: 40, title: "40歲 不惑突破期", desc: "人到中年，你開始思考人生的第二座高峰:",
     choices: [
-      { text: "1. 穩紮穩打 在現有領域做到極致", h: 0, w: 15, k: 5 },
-      { text: "2. 與朋友合夥 開創屬於自己的公司", h: -10, w: 30, k: -5 },
-      { text: "3. 重拾童年夢想 學習一門全新藝能", h: 5, w: -10, k: 20 },
-      { text: "4. 淡出名利爭奪 享受平淡穩定的日子", h: 10, w: 0, k: 10 }
+      { text: "1. 穩紮穩打，在現有專業領域做到極致精進", h: 0, w: 20, k: 5 },
+      { text: "2. 找夥伴合夥開店，開創屬於自己的公司", h: -10, w: 35, k: -5 },
+      { text: "3. 重拾年少夢想，學習一門全新藝術或樂器", h: 5, w: -10, k: 20 },
+      { text: "4. 看淡職場名利，追求內心平靜與慢活", h: 15, w: 0, k: 15 }
     ]
   },
   {
-    age: 45,
-    title: "45歲 中年危機期",
-    desc: "體能與體重開始變化 職場後浪逼近 你如何應對:",
+    age: 45, title: "45歲 中年危機期", desc: "體力不如以往，職場也出現後輩追趕，你如何因應:",
     choices: [
-      { text: "1. 定期進修學習新科技 避免被淘汰", h: -5, w: 15, k: 0 },
-      { text: "2. 積極養生 參加馬拉松或登山社團", h: 20, w: -5, k: 10 },
-      { text: "3. 購買高額保險與穩健型債券避險", h: 0, w: 15, k: 5 },
-      { text: "4. 經常邀約三五好友 喝酒聚餐紓壓", h: -10, w: -5, k: 15 }
+      { text: "1. 定期進修最新科技，避免遭到時代淘汰", h: -5, w: 15, k: 0 },
+      { text: "2. 徹底執行養生，報名馬拉松與登山社團", h: 25, w: -5, k: 10 },
+      { text: "3. 調整資產配置，購買高額保險與穩健債券", h: 0, w: 20, k: 5 },
+      { text: "4. 經常用美酒佳餚與好友聚會來紓解壓力", h: -15, w: -5, k: 15 }
     ]
   },
   {
-    age: 50,
-    title: "50歲 知天命期",
-    desc: "孩子逐漸長大獨立 人生步入成熟收穫期 你決定:",
+    age: 50, title: "50歲 知天命期", desc: "孩子逐漸長大獨立，人生步入成熟收穫的黃金期:",
     choices: [
-      { text: "1. 提早規劃退休金 準備享受晚年", h: 5, w: 20, k: 10 },
-      { text: "2. 投入社會公益 當志工回饋社會", h: 5, w: -5, k: 20 },
-      { text: "3. 買下一小塊農地 體會自給自足樂趣", h: 10, w: -10, k: 15 },
-      { text: "4. 繼續擔任顧問 傳承一生經驗給後輩", h: -5, w: 15, k: 5 }
+      { text: "1. 加速累積退休基金，準備迎接愜意晚年", h: 5, w: 25, k: 10 },
+      { text: "2. 投身社會公益慈善，擔任志工回饋鄉里", h: 5, w: -5, k: 25 },
+      { text: "3. 買下鄉間農地，體驗自給自足的田園樂趣", h: 15, w: -15, k: 20 },
+      { text: "4. 擔任企業高級顧問，將經驗傳承給後輩", h: -5, w: 20, k: 10 }
     ]
   },
   {
-    age: 55,
-    title: "55歲 準退休期",
-    desc: "職場生涯倒數 計畫未來的日子:",
+    age: 55, title: "55歲 準退休期", desc: "職場生涯倒數計時，你對未來的生活新規劃是:",
     choices: [
-      { text: "1. 辦理提早退休 開始環遊世界之旅", h: 10, w: -15, k: 25 },
-      { text: "2. 留任原職 領著穩定高薪直到屆齡", h: -5, w: 15, k: 0 },
-      { text: "3. 搬遷至步調較慢的宜居小鎮生活", h: 15, w: -5, k: 15 },
-      { text: "4. 經營社群平台 分享人生經歷與心得", h: 0, w: 5, k: 10 }
+      { text: "1. 申請提早退休，背起行囊展開世界旅行", h: 10, w: -20, k: 30 },
+      { text: "2. 留任原職繼續打拼，領取穩定高薪到屆齡", h: -10, w: 25, k: 0 },
+      { text: "3. 搬到步調慢的宜居小鎮，享受寧靜清幽", h: 20, w: -10, k: 20 },
+      { text: "4. 經營自媒體或寫作，分享大半生寶貴心得", h: 0, w: 10, k: 15 }
     ]
   },
   {
-    age: 60,
-    title: "60歲 耳順清閒期",
-    desc: "正式步入退休生活 每天早晨醒來你的規劃是:",
+    age: 60, title: "60歲 耳順清閒期", desc: "正式卸下重擔，每天早晨醒來你的退休日常是:",
     choices: [
-      { text: "1. 每天公園晨運 參加太極拳或瑜珈", h: 20, w: 0, k: 10 },
-      { text: "2. 幫忙照顧孫輩 感受兒孫繞膝之樂", h: -5, w: -5, k: 15 },
-      { text: "3. 學習攝影與繪畫 紀錄晚年生活細節", h: 5, w: -5, k: 15 },
-      { text: "4. 與老伴踏青散步 享受溫馨歲月靜好", h: 10, w: 0, k: 15 }
+      { text: "1. 天天公園晨運打太極，維持硬朗體態", h: 25, w: 0, k: 15 },
+      { text: "2. 幫忙帶孫子孫女，享受熱鬧的天倫之樂", h: -5, w: -5, k: 20 },
+      { text: "3. 學習攝影、書法或繪畫，豐富精神世界", h: 5, w: -5, k: 20 },
+      { text: "4. 與老伴攜手四處散步，享受溫馨歲月", h: 15, w: 0, k: 20 }
     ]
   },
   {
-    age: 65,
-    title: "65歲 樂齡花甲期",
-    desc: "老朋友陸續聚會 談起當年的風光歲月 你心中想著:",
+    age: 65, title: "65歲 樂齡花甲期", desc: "老朋友聚會時，談起當年的風光歲月與過往:",
     choices: [
-      { text: "1. 慶幸自己一生積蓄充沛 晚年無憂", h: 0, w: 10, k: 10 },
-      { text: "2. 感慨身體健康才是最大的財富", h: 15, w: 0, k: 10 },
-      { text: "3. 寫一部回憶錄 紀錄自己的經歷", h: 0, w: 0, k: 15 },
-      { text: "4. 保持赤子之心 繼續學習新事物", h: 10, w: 0, k: 15 }
+      { text: "1. 慶幸自己積蓄豐厚，晚年生活絕對無憂", h: 0, w: 15, k: 15 },
+      { text: "2. 深感身體無病無痛才是無價之寶", h: 20, w: 0, k: 15 },
+      { text: "3. 著手撰寫個人回憶錄，紀錄一生精采點滴", h: 0, w: 0, k: 20 },
+      { text: "4. 保持赤子好奇心，繼續學習沒接觸過的新鮮事", h: 15, w: 0, k: 20 }
     ]
   },
   {
-    age: 70,
-    title: "70歲 從心所欲期",
-    desc: "漫長的人生長河即將抵達終點 你的生活態度是:",
+    age: 70, title: "70歲 從心所欲期", desc: "人生邁入古稀之年，日常心態變得更加豁達:",
     choices: [
-      { text: "1. 每日曬太陽看書 恬淡平靜過日子", h: 10, w: 0, k: 10 },
-      { text: "2. 經常與家族聚餐 享受熱鬧的溫馨", h: 5, w: -5, k: 15 },
-      { text: "3. 坦然面對歲月 流逝不留任何遺憾", h: 5, w: 0, k: 20 },
-      { text: "4. 保持樂觀開朗 成為晚輩心中的慈祥長者", h: 10, w: 0, k: 15 }
+      { text: "1. 每天曬太陽閱讀，過著恬淡平靜的日子", h: 15, w: 0, k: 15 },
+      { text: "2. 經常舉辦家族大聚餐，享受熱鬧溫馨", h: 5, w: -5, k: 20 },
+      { text: "3. 看淡一切恩怨，坦然面對歲月不留遺憾", h: 10, w: 0, k: 25 },
+      { text: "4. 保持開朗幽默，成為晚輩敬重的慈祥長者", h: 15, w: 0, k: 20 }
+    ]
+  },
+  {
+    age: 75, title: "75歲 杖朝高齡期", desc: "身體機能逐漸老化，但你依然展現生命韌性:",
+    choices: [
+      { text: "1. 積極配合醫師定期健檢與復健", h: 25, w: -10, k: 5 },
+      { text: "2. 把珍貴財產與心意平穩交接給下一代", h: -5, w: 10, k: 15 },
+      { text: "3. 每天在家中庭院或附近公園散步看花草", h: 15, w: 0, k: 15 },
+      { text: "4. 經常和老友話家常，回味年輕時的趣事", h: 5, w: 0, k: 20 }
+    ]
+  },
+  {
+    age: 80, title: "80歲 傘壽尊榮期", desc: "迎來了高壽的80大壽，子孫滿堂圍繞身邊:",
+    choices: [
+      { text: "1. 舉辦盛大壽宴，接受眾人誠摯祝福", h: 0, w: -10, k: 25 },
+      { text: "2. 保持清淡飲食與規律作息，繼續養生", h: 25, w: 0, k: 10 },
+      { text: "3. 將一生珍藏的物品與故事分送給晚輩", h: 0, w: 0, k: 20 },
+      { text: "4. 靜心閉目養神，享受內心的安詳與平靜", h: 15, w: 0, k: 20 }
+    ]
+  },
+  {
+    age: 85, title: "85歲 米壽耆老期", desc: "歲月在臉上留下深刻痕跡，面對晚年生活:",
+    choices: [
+      { text: "1. 依賴家庭看護與醫療照護安穩度日", h: 10, w: -15, k: 10 },
+      { text: "2. 靠著堅強意志每天堅持自己走動", h: 20, w: 0, k: 15 },
+      { text: "3. 常常陷入對美好過往的回憶與微笑中", h: 0, w: 0, k: 20 },
+      { text: "4. 安靜聆聽子孫們分享他們的現代生活", h: 5, w: 0, k: 15 }
+    ]
+  },
+  {
+    age: 90, title: "90歲 卒壽世紀期", desc: "見證了時代巨變，你成為家族中最尊貴的寶藏:",
+    choices: [
+      { text: "1. 成為活化石般的傳奇長者，備受尊崇", h: 5, w: 0, k: 25 },
+      { text: "2. 默默祈求家人平安健康，心無罣礙", h: 10, w: 0, k: 20 },
+      { text: "3. 享受每一縷陽光與微風帶來的溫暖", h: 15, w: 0, k: 20 },
+      { text: "4. 放下一切執念，平靜等待自然安息", h: 0, w: 0, k: 20 }
+    ]
+  },
+  {
+    age: 95, title: "95歲 白壽巔峰期", desc: "生命之燈雖然微弱，但散發出溫暖的光芒:",
+    choices: [
+      { text: "1. 靠著強韌生命力打破醫師的預言", h: 20, w: 0, k: 10 },
+      { text: "2. 接受身體的衰老，安詳度過每一天", h: 10, w: 0, k: 20 },
+      { text: "3. 感受子孫們無微不至的孝順與照顧", h: 5, w: 0, k: 25 },
+      { text: "4. 在夢中經常回到年輕時最快樂的時光", h: 0, w: 0, k: 25 }
+    ]
+  },
+  {
+    age: 100, title: "100歲 百歲人瑞期", desc: "跨越一整個世紀的漫長歲月，你終於走到了這一天:",
+    choices: [
+      { text: "1. 接受地方政府頒發的百歲人瑞祝賀獎牌", h: 0, w: 0, k: 30 },
+      { text: "2. 帶著滿滿的感恩與微笑，向世界道別", h: 0, w: 0, k: 35 },
+      { text: "3. 看到家族枝繁葉茂，心中感到極度圓滿", h: 0, w: 0, k: 35 },
+      { text: "4. 毫無遺憾地閉上雙眼，結束傳奇的一生", h: 0, w: 0, k: 30 }
     ]
   }
 ];
 
 function updateStats() {
   document.getElementById("current-age").innerText = player.age;
-  document.getElementById("player-health").innerText = player.health > 70 ? "強健" : player.health > 40 ? "正常" : "虛弱";
-  document.getElementById("player-wealth").innerText = player.wealth > 70 ? "富裕" : player.wealth > 40 ? "小康" : "拮据";
-  document.getElementById("player-happy").innerText = player.happy > 70 ? "愉悦" : player.happy > 40 ? "平穩" : "低落";
-}
-
-window.startNewLife = function() {
-  var country = countriesData[Math.floor(Math.random() * countriesData.length)];
-  var bg = country.bg[Math.floor(Math.random() * country.bg.length)];
-  
-  player = { 
-    country: country.name, 
-    lifeExp: country.lifeExp, 
-    childMortality: country.childMortality, 
-    bg: bg, 
-    age: 0,
-    health: 80,
-    wealth: 50,
-    happy: 70
-  };
-
-  currentStageIndex = 0;
-  document.getElementById("character-info").style.display = "grid";
-  document.getElementById("country-name").innerText = player.country;
-  document.getElementById("family-bg").innerText = player.bg;
-  updateStats();
-
-  if (Math.random() * 100 < player.childMortality) {
-    document.getElementById("event-display").innerText = "悲劇！你出生在 " + player.country + " (" + player.bg + ") 因醫療資源不足在 5 歲前不幸夭折.";
-    renderRestartButton();
-  } else {
-    document.getElementById("event-display").innerText = "你順利降生在 " + player.country + " 的 " + player.bg + " 平安度過了幼兒期.";
-    renderNextButton("進入 5 歲 幼兒成長期", window.nextStage);
-  }
-};
-
-window.nextStage = function() {
-  if (currentStageIndex >= stages.length) {
-    finalEnding();
-    return;
-  }
-
-  var stg = stages[currentStageIndex];
-  player.age = stg.age;
-  updateStats();
-
-  document.getElementById("event-display").innerText = stg.title + " - " + stg.desc;
-
-  var btns = stg.choices.map(function(c) {
-    return {
-      text: c.text,
-      action: function() {
-        player.health += c.h;
-        player.wealth += c.w;
-        player.happy += c.k;
-        currentStageIndex++;
-        window.nextStage();
-      }
-    };
-  });
-
-  renderChoices(btns);
-};
-
-function finalEnding() {
-  player.age = player.lifeExp + Math.floor((player.health - 50) / 5);
-  updateStats();
-  
-  var resultMsg = "人生終點: 你在 " + player.country + " 度過了充實的一生 享年 " + player.age + " 歲.";
-  
-  if (player.wealth > 80 && player.happy > 80) {
-    resultMsg += " 你成就非凡、財富充沛且晚年無比幸福 是人人稱羨的人生贏家！";
-  } else if (player.health > 80) {
-    resultMsg += " 你一生非常注重養生 保有健康的體魄 享受了極高品質的長壽人生.";
-  } else if (player.wealth > 80) {
-    resultMsg += " 你一生勤奮打拚 積累了豐厚的家產 為子孫打下堅實基礎.";
-  } else if (player.happy > 80) {
-    resultMsg += " 你心態豁達樂觀 一生充滿歡笑 活過了最真實自在的自己.";
-  } else {
-    resultMsg += " 你歷經了無數個5年的抉擇與風吹雨打 平淡而真實地寫下了屬於你的人生篇章.";
-  }
-
-  document.getElementById("event-display").innerText = resultMsg;
-  renderRestartButton();
-}
-
-function renderNextButton(text, callback) {
-  var container = document.getElementById("action-buttons");
-  container.innerHTML = "";
-  var btn = document.createElement("div");
-  btn.className = "custom-btn btn-restart";
-  btn.innerText = text;
-  btn.onclick = callback;
-  container.appendChild(btn);
-}
-
-function renderRestartButton() {
-  var container = document.getElementById("action-buttons");
-  container.innerHTML = "";
-  var btn = document.createElement("div");
-  btn.className = "custom-btn btn-restart";
-  btn.innerText = "重新投胎";
-  btn.onclick = window.startNewLife;
-  container.appendChild(btn);
-}
-
-function renderChoices(choices) {
-  var container = document.getElementById("action-buttons");
-  container.innerHTML = "";
-  choices.forEach(function(c) {
-    var btn = document.createElement("div");
-    btn.className = "custom-btn";
-    btn.innerText = c.text;
-    btn.onclick = c.action;
-    container.appendChild(btn);
-  });
-}
-</script>
-
-</body>
-</html>
+  document.getElementById("player-health").innerText = player.health > 70 ? "強健" : player.health
