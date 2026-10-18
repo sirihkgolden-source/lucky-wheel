@@ -46,8 +46,8 @@
 <body>
 
 <div class="game-card">
-  <h2 class="game-title">人生重來模擬器</h2>
-  <div class="game-subtitle">真實全球機率版 每5年一次抉擇</div>
+  <h2 class="game-title">80億分之1 人生重來模擬器</h2>
+  <div class="game-subtitle">真實全球機率版 每5年一次重大命運抉擇</div>
   <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 10px 0;">
 
   <div id="character-info" class="stat-box" style="display:none;">
@@ -60,11 +60,11 @@
   </div>
 
   <div id="event-display" class="event-text">
-    點擊下方按鈕開始遊戲
+    點擊下方按鈕開始 隨機投胎展開你的一生
   </div>
 
   <div id="action-buttons" class="btn-container">
-    <div class="custom-btn btn-restart" id="start-btn">開始遊戲</div>
+    <div class="custom-btn btn-restart" id="start-btn">開始投胎</div>
   </div>
 </div>
 
@@ -75,8 +75,8 @@ var countriesData = [
   { name: "奈及利亞", prob: 5.7, lifeExp: 55, childMortality: 10.0, bg: ["傳統部落家庭", "城鎮基層家庭"] },
   { name: "巴基斯坦", prob: 5.2, lifeExp: 67, childMortality: 6.0, bg: ["基層勞工家庭", "地方經商家庭"] },
   { name: "印尼", prob: 3.4, lifeExp: 71, childMortality: 2.1, bg: ["農家家庭", "城市小資家庭"] },
-  { name: "台灣", prob: 0.1, lifeExp: 80, childMortality: 0.5, bg: ["雙薪上班族", "科技業家庭", "傳統農漁業"] },
-  { name: "香港", prob: 0.1, lifeExp: 85, childMortality: 0.2, bg: ["公屋基層家庭", "中產專業家庭", "金融高壓家庭"] },
+  { name: "台灣", prob: 0.1, lifeExp: 80.6, childMortality: 0.5, bg: ["雙薪上班族", "科技業家庭", "傳統農漁業"] },
+  { name: "香港", prob: 0.1, lifeExp: 85.0, childMortality: 0.2, bg: ["公屋基層家庭", "中產專業家庭", "金融高壓家庭"] },
   { name: "其他國家", prob: 61.2, lifeExp: 72, childMortality: 2.5, bg: ["普通基層家庭", "小商人家庭", "邊境勞工家庭"] }
 ];
 
@@ -88,7 +88,7 @@ var stages = [
     age: 5, title: "5歲 幼兒期", desc: "你開始對世界充滿好奇 父母安排你的生活",
     choices: [
       { text: "1 閱讀繪本故事", h: 0, w: 5, k: 5 },
-      { text: "2公園瘋跑玩耍", h: 10, w: 0, k: 5 },
+      { text: "2 公園瘋跑玩耍", h: 10, w: 0, k: 5 },
       { text: "3 沉迷積木拼圖", h: 0, w: 0, k: 10 },
       { text: "4 到處交朋友", h: -5, w: 5, k: 5 }
     ]
@@ -247,182 +247,4 @@ var stages = [
     ]
   },
   {
-    age: 95, title: "95歲 巔峰期", desc: "生命之燈雖然微弱 但散發出溫暖光芒",
-    choices: [
-      { text: "1 打破醫師預言", h: 20, w: 0, k: 10 },
-      { text: "2 安詳度過每日", h: 10, w: 0, k: 20 },
-      { text: "3 感受子孫孝順", h: 5, w: 0, k: 25 },
-      { text: "4 回到快樂時光", h: 0, w: 0, k: 25 }
-    ]
-  },
-  {
-    age: 100, title: "100歲 人瑞期", desc: "跨越一整世紀的漫長歲月 你走到了今天",
-    choices: [
-      { text: "1 接受人瑞獎牌", h: 0, w: 0, k: 30 },
-      { text: "2 向世界道別", h: 0, w: 0, k: 35 },
-      { text: "3 心中極度圓滿", h: 0, w: 0, k: 35 },
-      { text: "4 結束傳奇一生", h: 0, w: 0, k: 30 }
-    ]
-  }
-];
-
-function updateStats() {
-  document.getElementById("current-age").innerText = player.age;
-  document.getElementById("player-health").innerText = player.health > 70 ? "強健" : player.health > 40 ? "正常" : "虛弱";
-  document.getElementById("player-wealth").innerText = player.wealth > 70 ? "富裕" : player.wealth > 40 ? "小康" : "拮据";
-  document.getElementById("player-happy").innerText = player.happy > 70 ? "愉悦" : player.happy > 40 ? "平穩" : "低落";
-}
-
-function getRandomCountry() {
-  var totalProb = 0;
-  for (var i = 0; i < countriesData.length; i++) {
-    totalProb += countriesData[i].prob;
-  }
-  var rand = Math.random() * totalProb;
-  var currentSum = 0;
-  for (var i = 0; i < countriesData.length; i++) {
-    currentSum += countriesData[i].prob;
-    if (rand <= currentSum) {
-      return countriesData[i];
-    }
-  }
-  return countriesData[0];
-}
-
-function startNewLife() {
-  var country = getRandomCountry();
-  var bg = country.bg[Math.floor(Math.random() * country.bg.length)];
-  
-  player = { 
-    country: country.name, lifeExp: country.lifeExp, childMortality: country.childMortality,
-    bg: bg, age: 0, health: 85, wealth: 50, happy: 75
-  };
-
-  currentStageIndex = 0;
-  document.getElementById("character-info").style.display = "grid";
-  document.getElementById("country-name").innerText = player.country;
-  document.getElementById("family-bg").innerText = player.bg;
-  updateStats();
-
-  if (Math.random() * 100 < player.childMortality) {
-    document.getElementById("event-display").innerText = "悲劇 夭折";
-    renderRestartButton();
-  } else {
-    document.getElementById("event-display").innerText = "平安度過幼兒期";
-    renderNextButton("進入下一階段", nextStage);
-  }
-}
-
-function nextStage() {
-  if (currentStageIndex >= stages.length) {
-    finalEnding();
-    return;
-  }
-
-  var stg = stages[currentStageIndex];
-  player.age = stg.age;
-  updateStats();
-
-  var randomEventText = "";
-  if (Math.random() < 0.35 && currentStageIndex > 1) {
-    var events = [
-      " 獲得好名聲",
-      " 投資獲得小財",
-      " 感冒休息幾天",
-      " 結交摯友"
-    ];
-    randomEventText = events[Math.floor(Math.random() * events.length)];
-  }
-
-  document.getElementById("event-display").innerText = stg.title + " " + stg.desc + randomEventText;
-
-  var btns = stg.choices.map(function(c) {
-    return {
-      text: c.text,
-      action: function() {
-        player.health += c.h;
-        player.wealth += c.w;
-        player.happy += c.k;
-        
-        if (player.health < 0) player.health = 0;
-        if (player.wealth < 0) player.wealth = 0;
-        if (player.happy < 0) player.happy = 0;
-        
-        if (player.health <= 0) {
-          triggerEarlyDeath();
-        } else {
-          currentStageIndex++;
-          nextStage();
-        }
-      }
-    };
-  });
-
-  renderChoices(btns);
-}
-
-function triggerEarlyDeath() {
-  document.getElementById("event-display").innerText = "健康耗盡 提早離世";
-  renderRestartButton();
-}
-
-function finalEnding() {
-  var bonus = Math.floor((player.health - 50) / 4);
-  player.age = player.lifeExp + bonus;
-  if (player.age > 102) player.age = 102;
-  updateStats();
-  
-  var titleStr = "";
-  if (player.wealth > 85 && player.happy > 85) {
-    titleStr = "結局 世紀巨擘 人生贏家";
-  } else if (player.health > 85) {
-    titleStr = "結局 長壽泰斗 世紀人瑞";
-  } else if (player.wealth > 85) {
-    titleStr = "結局 商業巨賈 傳奇基業";
-  } else if (player.happy > 85) {
-    titleStr = "結局 樂活大師 快樂一生";
-  } else {
-    titleStr = "結局 平凡旅人 百年篇章";
-  }
-
-  document.getElementById("event-display").innerText = "人生終點 享年 " + player.age + " 歲 " + titleStr;
-  renderRestartButton();
-}
-
-function renderNextButton(text, callback) {
-  var container = document.getElementById("action-buttons");
-  container.innerHTML = "";
-  var btn = document.createElement("div");
-  btn.className = "custom-btn btn-restart";
-  btn.innerText = text;
-  btn.onclick = callback;
-  container.appendChild(btn);
-}
-
-function renderRestartButton() {
-  var container = document.getElementById("action-buttons");
-  container.innerHTML = "";
-  var btn = document.createElement("div");
-  btn.className = "custom-btn btn-restart";
-  btn.innerText = "再次投胎";
-  btn.onclick = startNewLife;
-  container.appendChild(btn);
-}
-
-function renderChoices(choices) {
-  var container = document.getElementById("action-buttons");
-  container.innerHTML = "";
-  choices.forEach(function(c) {
-    var btn = document.createElement("div");
-    btn.className = "custom-btn";
-    btn.innerText = c.text;
-    btn.onclick = c.action;
-    container.appendChild(btn);
-  });
-}
-
-document.getElementById("start-btn").onclick = startNewLife;
-</script>
-
-</body>
-</html>
+    age: 9
