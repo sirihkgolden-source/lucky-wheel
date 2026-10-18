@@ -247,4 +247,170 @@ var stages = [
     ]
   },
   {
-    age: 9
+    age: 95, title: "95歲 巔峰期", desc: "生命之燈雖然微弱 但散發出溫暖光芒",
+    choices: [
+      { text: "1 打破醫師預言", h: 20, w: 0, k: 10 },
+      { text: "2 安詳度過每日", h: 10, w: 0, k: 20 },
+      { text: "3 感受子孫孝順", h: 5, w: 0, k: 25 },
+      { text: "4 回到快樂時光", h: 0, w: 0, k: 25 }
+    ]
+  },
+  {
+    age: 100, title: "100歲 人瑞期", desc: "跨越一整世紀的漫長歲月 你走到了今天",
+    choices: [
+      { text: "1 接受人瑞獎牌", h: 0, w: 0, k: 30 },
+      { text: "2 向世界道別", h: 0, w: 0, k: 35 },
+      { text: "3 心中極度圓滿", h: 0, w: 0, k: 35 },
+      { text: "4 結束傳奇一生", h: 0, w: 0, k: 30 }
+    ]
+  }
+];
+
+function updateStats() {
+  document.getElementById("current-age").innerText = player.age;
+  document.getElementById("player-health").innerText = player.health > 70 ? "強健" : player.health > 40 ? "正常" : "虛弱";
+  document.getElementById("player-wealth").innerText = player.wealth > 70 ? "富裕" : player.wealth > 40 ? "小康" : "拮据";
+  document.getElementById("player-happy").innerText = player.happy > 70 ? "愉悦" : player.happy > 40 ? "平穩" : "低落";
+}
+
+function getRandomCountry() {
+  var totalProb = 0;
+  for (var i = 0; i < countriesData.length; i++) {
+    totalProb += countriesData[i].prob;
+  }
+  var rand = Math.random() * totalProb;
+  var currentSum = 0;
+  for (var i = 0; i < countriesData.length; i++) {
+    currentSum += countriesData[i].prob;
+    if (rand <= currentSum) {
+      return countriesData[i];
+    }
+  }
+  return countriesData[0];
+}
+
+function startNewLife() {
+  var country = getRandomCountry();
+  var bg = country.bg[Math.floor(Math.random() * country.bg.length)];
+  
+  player = { 
+    country: country.name, lifeExp: country.lifeExp, childMortality: country.childMortality,
+    bg: bg, age: 0, health: 85, wealth: 50, happy: 75
+  };
+
+  currentStageIndex = 0;
+  document.getElementById("character-info").style.display = "grid";
+  document.getElementById("country-name").innerText = player.country;
+  document.getElementById("family-bg").innerText = player.bg;
+  updateStats();
+
+  if (Math.random() * 100 < player.childMortality) {
+    document.getElementById("event-display").innerText = "悲劇 夭折";
+    renderRestartButton();
+  } else {
+    document.getElementById("event-display").innerText = "平安度過幼兒期";
+    renderNextButton("進入下一階段", nextStage);
+  }
+}
+
+function nextStage() {
+  if (currentStageIndex >= stages.length) {
+    finalEnding();
+    return;
+  }
+
+  var stg = stages[currentStageIndex];
+  player.age = stg.age;
+  updateStats();
+
+  var randomEventText = "";
+  if (Math.random() < 0.35 && currentStageIndex > 1) {
+    var events = [
+      " 獲得好名聲",
+      " 投資獲得小財",
+      " 感冒休息幾天",
+      " 結交摯友"
+    ];
+    randomEventText = events[Math.floor(Math.random() * events.length)];
+  }
+
+  document.getElementById("event-display").innerText = stg.title + " " + stg.desc + randomEventText;
+
+  var btns = stg.choices.map(function(c) {
+    return {
+      text: c.text,
+      action: function() {
+        player.health += c.h;
+        player.wealth += c.w;
+        player.happy += c.k;
+        
+        if (player.health < 0) player.health = 0;
+        if (player.wealth < 0) player.wealth = 0;
+        if (player.happy < 0) player.happy = 0;
+        
+        if (player.health <= 0) {
+          triggerEarlyDeath();
+        } else {
+          currentStageIndex++;
+          nextStage();
+        }
+      }
+    };
+  });
+
+  renderChoices(btns);
+}
+
+function triggerEarlyDeath() {
+  document.getElementById("event-display").innerText = "健康耗盡 提早離世";
+  renderRestartButton();
+}
+
+function finalEnding() {
+  var bonus = Math.floor((player.health - 50) / 4);
+  player.age = player.lifeExp + bonus;
+  if (player.age > 102) player.age = 102;
+  updateStats();
+  
+  // 使用最單純不帶任何特殊符號與變數拼接的固定結論文案
+  document.getElementById("event-display").innerText = "你的人生已經順利走完全程 感謝你的體驗";
+  renderRestartButton();
+}
+
+function renderNextButton(text, callback) {
+  var container = document.getElementById("action-buttons");
+  container.innerHTML = "";
+  var btn = document.createElement("div");
+  btn.className = "custom-btn btn-restart";
+  btn.innerText = text;
+  btn.onclick = callback;
+  container.appendChild(btn);
+}
+
+function renderRestartButton() {
+  var container = document.getElementById("action-buttons");
+  container.innerHTML = "";
+  var btn = document.createElement("div");
+  btn.className = "custom-btn btn-restart";
+  btn.innerText = "再次投胎";
+  btn.onclick = startNewLife;
+  container.appendChild(btn);
+}
+
+function renderChoices(choices) {
+  var container = document.getElementById("action-buttons");
+  container.innerHTML = "";
+  choices.forEach(function(c) {
+    var btn = document.createElement("div");
+    btn.className = "custom-btn";
+    btn.innerText = c.text;
+    btn.onclick = c.action;
+    container.appendChild(btn);
+  });
+}
+
+document.getElementById("start-btn").onclick = startNewLife;
+</script>
+
+</body>
+</html>
